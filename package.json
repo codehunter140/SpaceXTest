@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
+    "moment": "^2.29.1",
     "react": "16.8.6",
     "react-native": "0.59.5",
+    "react-native-datepicker-dialog": "0.0.9",
     "react-native-loading-spinner-overlay": "^2.0.0",
     "react-native-rn-cardview": "^1.0.4",
     "react-native-swipe-list-view": "^3.2.5"

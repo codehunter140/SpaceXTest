@@ -1,11 +1,13 @@
 import * as React from "react";
-import { SafeAreaView, StyleSheet, Animated, View, Dimensions, Text } from "react-native";
+import { SafeAreaView, StyleSheet, Animated, View, Dimensions, Text, TouchableOpacity } from "react-native";
 import APIHelper from '../../utils/APIHelper';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { LaunuchInfo } from '../../model/launchInfo';
 import { SearchBar } from "../../components/SearchBar";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { LaunchInfoCard } from "../../components/LaunchInfoCard";
+import { DatePickerDialog } from 'react-native-datepicker-dialog';
+import moment from 'moment';
 export interface Props {
 
 }
@@ -13,7 +15,8 @@ export interface Props {
 interface State {
   loading: boolean,
   arrLaunches: Array<LaunuchInfo>,
-  originLanuches: Array<LaunuchInfo>
+  originLanuches: Array<LaunuchInfo>,
+  searchDate : any
 }
 
 export class App extends React.Component<Props, State>{
@@ -27,7 +30,8 @@ export class App extends React.Component<Props, State>{
     this.state = {
       loading: false,
       arrLaunches: [],
-      originLanuches: []
+      originLanuches: [],
+      searchDate : null
     };
 
     this.onSwipeValueChange = this.onSwipeValueChange.bind(this);
@@ -113,7 +117,21 @@ export class App extends React.Component<Props, State>{
     })
     return arrSwipeList;
   }
+  selectDate(){
+    this.refs.dateDialog.open({
+      date : new Date()
+    });
+  }
+  onDatePicked(date : any){
+    
+    let dateString : string = moment(date).format('YYYY-MM-DD');
+    let filtered = this.state.originLanuches.filter(item => {
+      return item.date && item.date.search(dateString) !== -1
+    });
+    this.setState({ arrLaunches: filtered });
+   
 
+  }
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -123,6 +141,12 @@ export class App extends React.Component<Props, State>{
           textStyle={styles.spinnerTextStyle}
         />
         <SearchBar onSubmitKeyword={(text) => this.onSubmitKeyword(text)} onChangeKeyword={(text) => this.onChangeKeyword(text)} />
+        <TouchableOpacity
+          onPress={this.selectDate.bind(this)}
+          style={{alignItems : 'center', justifyContent : 'center',width : '100%', marginVertical : 10}}
+        >
+          <Text>Select a Date</Text>
+        </TouchableOpacity>
         <View style={{ flex: 1, marginTop: 5, alignItems: 'center', justifyContent: 'center' }}>
           {
             this.state.arrLaunches.length > 0 ? <SwipeListView
@@ -145,7 +169,7 @@ export class App extends React.Component<Props, State>{
               <Text>No data to display</Text>
           }
         </View>
-
+        <DatePickerDialog ref="dateDialog" onDatePicked={this.onDatePicked.bind(this)}></DatePickerDialog>
       </SafeAreaView>
     );
   }
